@@ -15,6 +15,13 @@ buildscript {
     }
 }
 
+repositories {
+    ivy {
+        name "BuildCraft"
+        artifactPattern "http://www.mod-buildcraft.com/releases/BuildCraft/[revision]/[module]-[revision]-[classifier].[ext]"
+    }
+}
+
 apply plugin: 'forge'
 
 version = "1.2"
@@ -40,6 +47,7 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
 	
+	compile name: "buildcraft", version: "7.0.16", classifier: "dev"
 
 }
 
@@ -61,4 +69,9 @@ processResources
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
+}
+
+compileJava {
+    sourceCompatibility = 1.7
+    targetCompatibility = 1.7
 }
