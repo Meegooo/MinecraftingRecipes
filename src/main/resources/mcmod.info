@@ -1,0 +1,18 @@
+[
+{
+  "modid": "MinecraftingRecipes",
+  "name": "Minerafting Recipes",
+  "description": "This mod adds recipes for items, that are not craftable otherwise",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "http://minecrafting.ru",
+  "updateUrl": "",
+  "authorList": ["Meegoo"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": [
+  "MinecraftForge,BuildCraft|Transport"
+]
+}
+]
