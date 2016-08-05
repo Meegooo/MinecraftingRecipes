@@ -20,34 +20,41 @@ repositories {
         name "BuildCraft"
         artifactPattern "http://www.mod-buildcraft.com/releases/BuildCraft/[revision]/[module]-[revision]-[classifier].[ext]"
     }
+	maven {
+        name "DVS1 Maven FS"
+        url 'http://dvs1.progwml6.com/files/maven'
+    }
+    maven {
+        name "CB Maven FS"
+        url "http://chickenbones.net/maven/"
+    }
 }
 
+ext.configFile = file "build.properties"
+
+configFile.withReader {
+    // Load config.  It shall from now be referenced as simply config or project.config
+    def prop = new Properties()
+    prop.load(it)
+    project.ext.config = new ConfigSlurper().parse prop
+}
 apply plugin: 'forge'
 
-version = "1.2"
+version = config.mod_version + "-" + config.mc_version
 group= "ru.minecrafting.recipes" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "MinecraftingRecipes"
 
 minecraft {
-    version = "1.7.10-10.13.4.1558-1.7.10"
+    version = config.mc_version + "-" + config.forge_version
+    runDir = 'run'
     assetDir = "eclipse/assets"
 }
 
 dependencies {
-    // you may put jars on which you depend on in ./libs
-    // or you may define them like so..
-    //compile "some.group:artifact:version:classifier"
-    //compile "some.group:artifact:version"
-      
-    // real examples
-    //compile 'com.mod-buildcraft:buildcraft:6.0.8:dev'  // adds buildcraft to the dev env
-    //compile 'com.googlecode.efficient-java-matrix-library:ejml:0.24' // adds ejml to the dev env
 
-    // for more info...
-    // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
-    // http://www.gradle.org/docs/current/userguide/dependency_management.html
-	
-	compile name: "buildcraft", version: "7.0.16", classifier: "dev"
+	compile files('libs/Thaumcraft-1.7.10-4.2.3.5-deobf.jar')
+    compile group: "tconstruct", name: "TConstruct", version: "${config.mc_version}-${config.tcon_version}", classifier: "deobf"
+	compile name: "buildcraft", version: "${config.bc_version}", classifier: "dev"
 
 }
 
@@ -69,6 +76,10 @@ processResources
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.14.1' //version required
 }
 
 compileJava {
