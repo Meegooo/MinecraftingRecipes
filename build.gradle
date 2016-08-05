@@ -29,7 +29,7 @@ group= "ru.minecrafting.recipes" // http://maven.apache.org/guides/mini/guide-na
 archivesBaseName = "MinecraftingRecipes"
 
 minecraft {
-    version = "1.7.10-10.13.2.1286"
+    version = "1.7.10-10.13.4.1558-1.7.10"
     assetDir = "eclipse/assets"
 }
 

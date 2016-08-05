@@ -1,13 +1,14 @@
-package ru.minecrafting.recipes;
+package ru.minecrafting.recipes.util;
 
 import cpw.mods.fml.common.FMLLog;
 import org.apache.logging.log4j.Level;
+import ru.minecrafting.recipes.ModInfo;
 
 public class LogHelper
 {
     public static void log(Level logLevel, Object object)
     {
-        FMLLog.log(Reference.MOD_NAME, logLevel, String.valueOf(object));
+        FMLLog.log(ModInfo.MOD_NAME, logLevel, String.valueOf(object));
     }
 
     public static void all(Object object)

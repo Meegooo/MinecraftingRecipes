@@ -1,0 +1,28 @@
+#items
+ItemMRThaumcraft.0.name=Infused Blood
+ItemMRThaumcraft.1.name=Eldritch Knowledge Fragment
+ItemMRThaumcraft.2.name=Dull Primordial Pearl
+ItemMRThaumcraft.3.name=Blood Infused Cloth
+ItemMRThaumcraft.4.name=Blood Infused Ingot
+
+#research
+tc.research_name.ELDRITCH_KNOWLEDGE=Eldritch Knowledge
+tc.research_name.PEARL_CREATION=Primordial Pearl Creation
+tc.research_name.INFUSED_BLOOD=Infused Blood
+tc.research_name.CRIMSON_CLERIC_ARMOR=Crimson Cleric Armor
+tc.research_name.CRIMSON_KNIGHT_ARMOR=Crimson Knight Armor
+tc.research_name.CRIMSON_PRAETOR_ARMOR=Crimson Praetor Armor
+tc.research_name.CRIMSON_BLADE=Crimson Blade
+
+tc.research_text.ELDRITCH_KNOWLEDGE=[MR] This was hard to find,
+tc.research_text.PEARL_CREATION=[MR] But you succeeded.
+tc.research_text.INFUSED_BLOOD=[MR] So now you know
+tc.research_text.CRIMSON_CLERIC_ARMOR=[MR] How to create...
+tc.research_text.CRIMSON_KNIGHT_ARMOR=[MR] ...forbidden armor.
+tc.research_text.CRIMSON_PRAETOR_ARMOR=[MR] But sadly, it is useless.
+tc.research_text.CRIMSON_BLADE=[MR] At lest the sword is cool... :)
+
+#other
+mr.eldritchportal.fail=You're being pushed away by the unknown force.
+mr.eldritchportal.trigger=You can feel unusual energy in your hands
+mr.eldritchportal.research=It looks like you started to understand.... what?
