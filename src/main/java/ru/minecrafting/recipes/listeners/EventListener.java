@@ -134,7 +134,7 @@ public class EventListener {
 									Thaumcraft.proxy.getResearchManager().completeResearch(e.entityPlayer, "OUTERREV");
 									((EntityPlayerMP) e.entityPlayer).playerNetServerHandler.sendPacket(new S29PacketSoundEffect("thaumcraft:whispers", e.x, e.y, e.z, 1, 1F));
 								}
-							}, 1200));
+							}, ticks));
 						}
 					}
 				}

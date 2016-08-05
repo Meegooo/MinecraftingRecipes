@@ -1,6 +1,5 @@
 package ru.minecrafting.recipes.registers;
 
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;

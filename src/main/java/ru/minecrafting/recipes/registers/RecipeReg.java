@@ -4,8 +4,6 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.item.crafting.ShapedRecipes;
-import tconstruct.armor.TinkerArmor;
 import tconstruct.world.TinkerWorld;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
@@ -13,9 +11,7 @@ import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.crafting.InfusionRecipe;
 import thaumcraft.api.crafting.ShapedArcaneRecipe;
 import thaumcraft.api.crafting.ShapelessArcaneRecipe;
-import thaumcraft.common.config.Config;
 import thaumcraft.common.config.ConfigItems;
-import thaumcraft.common.container.ContainerArcaneWorkbench;
 
 public class RecipeReg {
 	public static InfusionRecipe pearl_infusion;

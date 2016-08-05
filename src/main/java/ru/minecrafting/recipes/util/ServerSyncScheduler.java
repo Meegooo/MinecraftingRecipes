@@ -3,7 +3,6 @@ package ru.minecrafting.recipes.util;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -52,11 +51,8 @@ public class ServerSyncScheduler {
 		}
 
 		public void tick() {
-			if (leftTicks-->0)
-				return;
-			else {
+			if (leftTicks--<=0)
 				runnable.run();
-			}
 		}
 	}
 }
