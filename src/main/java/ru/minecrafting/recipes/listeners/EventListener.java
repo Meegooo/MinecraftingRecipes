@@ -5,6 +5,7 @@ import cpw.mods.fml.common.gameevent.PlayerEvent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.monster.EntityGolem;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
@@ -13,8 +14,10 @@ import net.minecraft.network.play.server.S2APacketParticles;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import ru.minecrafting.recipes.data.PortalSacrificeData;
 import ru.minecrafting.recipes.entity.StaticEntityItem;
 import ru.minecrafting.recipes.registers.ItemReg;
 import ru.minecrafting.recipes.util.ServerSyncScheduler;
@@ -26,6 +29,7 @@ import thaumcraft.common.items.wands.ItemWandCasting;
 import thaumcraft.common.items.wands.foci.ItemFocusShock;
 import thaumcraft.common.lib.research.ResearchManager;
 import thaumcraft.common.tiles.TileEldritchAltar;
+import thaumcraft.common.tiles.TileEldritchPortal;
 
 import java.util.List;
 import java.util.Random;
@@ -53,6 +57,36 @@ public class EventListener {
 	}
 
 	@SubscribeEvent
+	//TODO Not tested and have to listen for more creatures
+	public void onKill(final LivingDeathEvent e) {
+		DamageSource damageSource = e.source;
+		if (damageSource instanceof EntityDamageSource) {
+			Entity killer = damageSource.getEntity();
+			if (killer instanceof EntityPlayerMP) {
+				if (e.entity instanceof EntityGolem || e.entity instanceof EntityEldritchGuardian) {
+					int minX = (int) Math.floor(e.entity.posX - 4);
+					int maxX = (int) Math.ceil(e.entity.posX + 4);
+					int minY = (int) Math.floor(e.entity.posY - 4);
+					int maxY = (int) Math.ceil(e.entity.posY + 4);
+					int minZ = (int) Math.floor(e.entity.posZ - 4);
+					int maxZ = (int) Math.ceil(e.entity.posZ + 4);
+					for (int x = minX; x <= maxX; x++) {
+						for (int y = minY; y <= maxY; y++) {
+							for (int z = minZ; z <= maxZ; z++) {
+								TileEntity tileEntity = e.entity.worldObj.getTileEntity(x, y, z);
+								if (tileEntity instanceof TileEldritchPortal) {
+									PortalSacrificeData.add((EntityPlayerMP) killer, x, y, z);
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
 	public void onInteract(final PlayerInteractEvent e) {
 		if (!e.world.isRemote && e.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
 			TileEntity tile = e.world.getTileEntity(e.x, e.y, e.z);
@@ -61,34 +95,16 @@ public class EventListener {
 			if (tile instanceof TileEldritchAltar && inUse != null && inUse.getItem() instanceof ItemWandCasting) {
 				TileEldritchAltar tilePortal = ((TileEldritchAltar) tile);
 				if (tilePortal.getEyes() == 4) {
-					if (!ResearchManager.isResearchComplete(e.entityPlayer.getDisplayName(), "ELDRITCH_KNOWLEDGE")) {
+					//If we have 4 eyes, we don't want portal to open
+					e.setCanceled(true);
+					PortalSacrificeData sacrificeData = PortalSacrificeData.get((EntityPlayerMP) e.entityPlayer);
+					//If all conditions are satisfied.
+					if (ResearchManager.isResearchComplete(e.entityPlayer.getDisplayName(), "ELDRITCH_KNOWLEDGE") &&
+							sacrificeData.getSacrificedAt() + 60000 >= System.currentTimeMillis() &&
+							sacrificeData.getPortalX() == tile.xCoord &&
+							sacrificeData.getPortalY() == tile.yCoord &&
+							sacrificeData.getPortalZ() == tile.zCoord) {
 
-						e.entityPlayer.addChatComponentMessage(new ChatComponentTranslation("§5§o" + StatCollector.translateToLocal("mr.eldritchportal.fail")));
-						ServerSyncScheduler.addTask(new ServerSyncScheduler.ScheduledTask(new Runnable() {
-							@Override
-							public void run() {
-								e.entityPlayer.addChatComponentMessage(new ChatComponentTranslation("§5§o" + StatCollector.translateToLocal("mr.eldritchportal.trigger")));
-								//Allow Eldritch Knowledge drops
-								e.entityPlayer.getEntityData().setBoolean("activatedObelisk", true);
-								((EntityPlayerMP) e.entityPlayer).playerNetServerHandler.sendPacket(new S29PacketSoundEffect("thaumcraft:whispers", e.x, e.y, e.z, 1, 1F));
-							}
-						}, 1200));
-
-						//throw particles at nearby players.
-						List<EntityPlayerMP> players = e.world.getEntitiesWithinAABB(EntityPlayerMP.class, AxisAlignedBB.getBoundingBox(e.x - 64, e.y - 64, e.z - 64, e.x + 64, e.y + 64, e.z + 64));
-						for (EntityPlayerMP player : players) {
-							player.playerNetServerHandler.sendPacket(new S2APacketParticles("magicCrit", e.x + 0.5F, e.y + 1.5F, e.z + 0.5F, 0.2F, 1F, 0.2F, 0.1F, 100));
-							player.playerNetServerHandler.sendPacket(new S29PacketSoundEffect("thaumcraft:golemironshoot", e.x, e.y, e.z, 1, 0.7F));
-						}
-						ItemFocusShock.shootLightning(e.world, e.entityPlayer, e.x, e.y + 3, e.z, true);
-						e.entityPlayer.attackEntityFrom(new DamageSource("Eldritch Obelisk"), ((float) (Math.random() * 5)));
-						//Move the player
-						Vec3 vec = e.entityPlayer.getLookVec();
-						final double speed = -Math.random() - 1;
-						e.entityPlayer.setVelocity(vec.xCoord * speed, vec.yCoord * speed, vec.zCoord * speed);
-						((EntityPlayerMP) e.entityPlayer).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(e.entityPlayer));
-					} else {
-						e.setCanceled(true);
 						//Drain vis
 						ItemWandCasting wand = ((ItemWandCasting) inUse.getItem());
 						if (
@@ -123,23 +139,56 @@ public class EventListener {
 							}
 
 							//Give player outer research
-							Thaumcraft.proxy.getResearchManager().completeResearch(e.entityPlayer, "ENTEROUTER");
-							double rand = Math.random();
-							int ticks = 6000 + ((int) (rand * 6000));
-							ServerSyncScheduler.addTask(new ServerSyncScheduler.ScheduledTask(new Runnable() {
-								@Override
-								public void run() {
-									e.entityPlayer.addChatComponentMessage(new ChatComponentTranslation("§5§o" + StatCollector.translateToLocal("mr.eldritchportal.research")));
+							if (!ResearchManager.isResearchComplete(e.entityPlayer.getDisplayName(), "ENDEROUTER"))
+								Thaumcraft.proxy.getResearchManager().completeResearch(e.entityPlayer, "ENTEROUTER");
+							if (!ResearchManager.isResearchComplete(e.entityPlayer.getDisplayName(), "OUTERREV")) {
+								double rand = Math.random();
+								int ticks = 6000 + ((int) (rand * 6000));
+								ServerSyncScheduler.addTask(new ServerSyncScheduler.ScheduledTask(new Runnable() {
+									@Override
+									public void run() {
+										e.entityPlayer.addChatComponentMessage(new ChatComponentTranslation("§5§o" + StatCollector.translateToLocal("mr.eldritchportal.research")));
 
-									Thaumcraft.proxy.getResearchManager().completeResearch(e.entityPlayer, "OUTERREV");
-									((EntityPlayerMP) e.entityPlayer).playerNetServerHandler.sendPacket(new S29PacketSoundEffect("thaumcraft:whispers", e.x, e.y, e.z, 1, 1F));
-								}
-							}, ticks));
+										Thaumcraft.proxy.getResearchManager().completeResearch(e.entityPlayer, "OUTERREV");
+										((EntityPlayerMP) e.entityPlayer).playerNetServerHandler.sendPacket(new S29PacketSoundEffect("thaumcraft:whispers", e.x, e.y, e.z, 1, 1F));
+									}
+								}, ticks));
+							}
 						}
+
+						return;
 					}
+
+					//If not all conditions are satisfied.
+					e.entityPlayer.addChatComponentMessage(new ChatComponentTranslation("§5§o" + StatCollector.translateToLocal("mr.eldritchportal.fail")));
+					if (!(e.entityPlayer.getEntityData().hasKey("activatedObelisk") && e.entityPlayer.getEntityData().getBoolean("activatedObelisk"))) {
+						ServerSyncScheduler.addTask(new ServerSyncScheduler.ScheduledTask(new Runnable() {
+							@Override
+							public void run() {
+								e.entityPlayer.addChatComponentMessage(new ChatComponentTranslation("§5§o" + StatCollector.translateToLocal("mr.eldritchportal.trigger")));
+								//Allow Eldritch Knowledge drops
+								((EntityPlayerMP) e.entityPlayer).playerNetServerHandler.sendPacket(new S29PacketSoundEffect("thaumcraft:whispers", e.x, e.y, e.z, 1, 1F));
+							}
+						}, 1200));
+						e.entityPlayer.getEntityData().setBoolean("activatedObelisk", true);
+					}
+					//throw particles at nearby players.
+					List<EntityPlayerMP> players = e.world.getEntitiesWithinAABB(EntityPlayerMP.class, AxisAlignedBB.getBoundingBox(e.x - 64, e.y - 64, e.z - 64, e.x + 64, e.y + 64, e.z + 64));
+					for (EntityPlayerMP player : players) {
+						player.playerNetServerHandler.sendPacket(new S2APacketParticles("magicCrit", e.x + 0.5F, e.y + 1.5F, e.z + 0.5F, 0.2F, 1F, 0.2F, 0.1F, 100));
+						player.playerNetServerHandler.sendPacket(new S29PacketSoundEffect("thaumcraft:golemironshoot", e.x, e.y, e.z, 1, 0.7F));
+					}
+					ItemFocusShock.shootLightning(e.world, e.entityPlayer, e.x, e.y + 3, e.z, true);
+					e.entityPlayer.attackEntityFrom(new DamageSource("Eldritch Obelisk"), ((float) (Math.random() * 5)));
+					//Move the player
+					Vec3 vec = e.entityPlayer.getLookVec();
+					final double speed = -Math.random() - 1;
+					e.entityPlayer.setVelocity(vec.xCoord * speed, vec.yCoord * speed, vec.zCoord * speed);
+					((EntityPlayerMP) e.entityPlayer).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(e.entityPlayer));
 				}
 			}
 		}
+
 	}
 
 	@SubscribeEvent
@@ -151,13 +200,13 @@ public class EventListener {
 				if (killer instanceof EntityPlayerMP) {
 					if (!ResearchManager.isResearchComplete(((EntityPlayerMP) killer).getDisplayName(), "OCULUS") &&
 							ResearchManager.isResearchComplete(((EntityPlayerMP) killer).getDisplayName(), "ELDRITCHMAJOR")) {
-						double i = random.nextDouble()*100;
-						if (i<1+e.lootingLevel) {
+						double i = random.nextDouble() * 100;
+						if (i < 1 + e.lootingLevel) {
 							e.drops.add(new EntityItem(e.entityLiving.worldObj, e.entityLiving.posX, e.entityLiving.posY, e.entityLiving.posZ,
 									new ItemStack(ConfigItems.itemEldritchObject, 1, 1)));
 						}
 					}
-					if (killer.getEntityData().hasKey("activatedObelisk") && killer.getEntityData().getBoolean("activatedObelisk")&&
+					if (killer.getEntityData().hasKey("activatedObelisk") && killer.getEntityData().getBoolean("activatedObelisk") &&
 							!ResearchManager.isResearchComplete(((EntityPlayerMP) killer).getDisplayName(), "ELDRITCH_KNOWLEDGE")) {
 						double i = random.nextDouble() * 1000 - e.lootingLevel * 200.0;
 						if (i < 200) {

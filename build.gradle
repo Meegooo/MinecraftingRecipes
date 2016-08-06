@@ -51,11 +51,10 @@ minecraft {
 }
 
 dependencies {
-
+    compile files('libs/Baubles-deobf-1.7.10-1.0.1.10')
 	compile files('libs/Thaumcraft-1.7.10-4.2.3.5-deobf.jar')
     compile group: "tconstruct", name: "TConstruct", version: "${config.mc_version}-${config.tcon_version}", classifier: "deobf"
 	compile name: "buildcraft", version: "${config.bc_version}", classifier: "dev"
-
 }
 
 processResources

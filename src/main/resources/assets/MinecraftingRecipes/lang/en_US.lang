@@ -7,7 +7,7 @@ ItemMRThaumcraft.4.name=Blood Infused Ingot
 
 #research
 tc.research_name.ELDRITCH_KNOWLEDGE=Eldritch Knowledge
-tc.research_name.PEARL_CREATION=Primordial Pearl Creation
+tc.research_name.PEARL_CREATION=Dull Pearl
 tc.research_name.INFUSED_BLOOD=Infused Blood
 tc.research_name.CRIMSON_CLERIC_ARMOR=Crimson Cleric Armor
 tc.research_name.CRIMSON_KNIGHT_ARMOR=Crimson Knight Armor
@@ -20,9 +20,18 @@ tc.research_text.INFUSED_BLOOD=[MR] So now you know
 tc.research_text.CRIMSON_CLERIC_ARMOR=[MR] How to create...
 tc.research_text.CRIMSON_KNIGHT_ARMOR=[MR] ...forbidden armor.
 tc.research_text.CRIMSON_PRAETOR_ARMOR=[MR] But sadly, it is useless.
-tc.research_text.CRIMSON_BLADE=[MR] At lest the sword is cool... :)
+tc.research_text.CRIMSON_BLADE=[MR] At least the sword is cool... :)
+
+tc.research_page.ELDRITCH_KNOWLEDGE.1=Apparently thaumaturgy is not that simple sometimes. You tried to do everything in your power to open the portal, but you couldn't succeed. <BR>Luckily, that feeling you felt before wasn't just a feeling. You were able to get more information from Eldritch Guardians and it looks like you figured everything out. 
+tc.research_page.ELDRITCH_KNOWLEDGE.2=Opening the portal requires you to do the sacrifice before activating it. But not every creature will work. Since you have to feed magical energy to the portal, the creature has to be magical as well. You think something like golem will work.
+tc.research_page.PEARL_CREATION.1=You weren't expecting that. Instead of portal, you got this strange ball. It looks like just a piece of useless glass, but when you picked it up, you felt some faint vibration. Maybe if you infuse it with more energy you could get something useful from it.
+tc.research_page.INFUSED_BLOOD.1=After some experiments with the Primordial Pearl you discovered that you could infuse real blood with magic.
+tc.research_page.CRIMSON_CLERIC_ARMOR.1=Sadly, you couldn't fine a lot of uses for the Infused Blood you recently discovered. But you found out that you could mix it with enchanted fabric to get red cloth, which you can use to create cool looking armor.
+tc.research_page.CRIMSON_KNIGHT_ARMOR.1=Alongside with cloth, using Infused Blood you were able to make this new metal. However, its properties are very strange. It almost feels like it has some contio...sness of its own. When you try to create armor, it seems like the metal helps you, but when you try to use it for anything else, it resists you.
+tc.research_page.CRIMSON_PRAETOR_ARMOR.1=Creating Crimson Leader armor from Crimson Knight armor.
+tc.research_page.CRIMSON_BLADE.1=After a lot of tries and failures you could squeeze one more use from Blood Ingots. And that is infusing Void Sword with the Blood Metal to create Crimson Blade.
 
 #other
-mr.eldritchportal.fail=You're being pushed away by the unknown force.
-mr.eldritchportal.trigger=You can feel unusual energy in your hands
-mr.eldritchportal.research=It looks like you started to understand.... what?
+mr.eldritchportal.fail=You are being pushed away by the unknown force.
+mr.eldritchportal.trigger=You are getting a strange feeling in your head. 
+mr.eldritchportal.research=You feel smarter.
