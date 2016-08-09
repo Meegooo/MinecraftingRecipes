@@ -17,18 +17,18 @@ import net.minecraft.network.play.server.S29PacketSoundEffect;
 import net.minecraft.network.play.server.S2APacketParticles;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
-import net.minecraft.world.World;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import ru.minecrafting.recipes.MinecraftingRecipes;
 import ru.minecrafting.recipes.data.PortalSacrificeData;
 import ru.minecrafting.recipes.entity.StaticEntityItem;
+import ru.minecrafting.recipes.network.PacketLightningBolt;
 import ru.minecrafting.recipes.registers.ItemReg;
 import ru.minecrafting.recipes.util.ServerSyncScheduler;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.entities.ITaintedMob;
-import thaumcraft.client.fx.bolt.FXLightningBolt;
 import thaumcraft.common.Thaumcraft;
 import thaumcraft.common.config.ConfigItems;
 import thaumcraft.common.entities.golems.EntityTravelingTrunk;
@@ -140,7 +140,9 @@ public class EventListener {
 							//Move the player
 							Vec3 vec = e.entityPlayer.getLookVec();
 							final double speed = -2.5 + Math.sqrt(e.entityPlayer.getDistance(e.x + 0.5, e.y + 0.5, e.z + 0.5));
-							e.entityPlayer.setVelocity(vec.xCoord * speed, -0.3 * speed, vec.zCoord * speed);
+							((EntityPlayerMP) e.entityPlayer).motionX = vec.xCoord * speed;
+							((EntityPlayerMP) e.entityPlayer).motionY = -0.3 * speed;
+							((EntityPlayerMP) e.entityPlayer).motionZ = vec.zCoord * speed;
 							((EntityPlayerMP) e.entityPlayer).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(e.entityPlayer));
 
 							//Send sound
@@ -195,22 +197,15 @@ public class EventListener {
 							e.entityPlayer.getEntityData().setBoolean("activatedObelisk", true);
 						}
 
-						//throw particles at nearby players.
-						List<EntityPlayerMP> players = e.world.getEntitiesWithinAABB(EntityPlayerMP.class, AxisAlignedBB.getBoundingBox(e.x - 64, e.y - 64, e.z - 64, e.x + 64, e.y + 64, e.z + 64));
-						for (EntityPlayerMP player : players) {
-							player.playerNetServerHandler.sendPacket(new S2APacketParticles("magicCrit", e.x + 0.5F, e.y + 1.5F, e.z + 0.5F, 0.2F, 1F, 0.2F, 0.1F, 100));
-							player.playerNetServerHandler.sendPacket(new S29PacketSoundEffect("thaumcraft:golemironshoot", e.x, e.y, e.z, 1, 0.7F));
-						}
-						Vec3 vecPortal = Vec3.createVectorHelper(e.x + 0.5, e.y + 2.1, e.z + 0.5);
-						shootBolt(e.world, vecPortal, getVecFromPlayer(e.entityPlayer));
-
 						//Damage the player
 						e.entityPlayer.attackEntityFrom(new DamageSource("Eldritch Obelisk"), ((float) (Math.random() * 5)));
 
 						//Move the player
 						Vec3 vec = e.entityPlayer.getLookVec();
 						final double speed = -3 + Math.sqrt(e.entityPlayer.getDistance(e.x + 0.5, e.y + 0.5, e.z + 0.5));
-						e.entityPlayer.setVelocity(vec.xCoord * speed, -0.4 * speed, vec.zCoord * speed);
+						((EntityPlayerMP) e.entityPlayer).motionX = vec.xCoord * speed;
+						((EntityPlayerMP) e.entityPlayer).motionY = -0.4 * speed;
+						((EntityPlayerMP) e.entityPlayer).motionZ = vec.zCoord * speed;
 						((EntityPlayerMP) e.entityPlayer).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(e.entityPlayer));
 
 						//Drop the eyes
@@ -224,14 +219,38 @@ public class EventListener {
 						e.world.spawnEntityInWorld(item2);
 						e.world.spawnEntityInWorld(item3);
 						e.world.spawnEntityInWorld(item4);
-						item1.setVelocity(0, 0.25, 0.25);
-						item2.setVelocity(0, 0.25, -0.25);
-						item3.setVelocity(0.25, 0.25, 0);
-						item4.setVelocity(-0.25, 0.25, 0);
+						item1.motionX = 0;
+						item1.motionY = 0.25;
+						item1.motionZ = 0.25;
+						item2.motionX = 0;
+						item2.motionY = 0.25;
+						item2.motionZ = -0.25;
+						item3.motionX = 0.25;
+						item3.motionY = 0.25;
+						item3.motionZ = 0;
+						item4.motionX = -0.25;
+						item4.motionY = 0.25;
+						item4.motionZ = 0;
 						item1.velocityChanged = true;
 						item2.velocityChanged = true;
 						item3.velocityChanged = true;
 						item4.velocityChanged = true;
+
+						//throw particles and move items for nearby players.
+						List<EntityPlayerMP> players = e.world.getEntitiesWithinAABB(EntityPlayerMP.class, AxisAlignedBB.getBoundingBox(e.x - 64, e.y - 64, e.z - 64, e.x + 64, e.y + 64, e.z + 64));
+						for (EntityPlayerMP player : players) {
+							player.playerNetServerHandler.sendPacket(new S2APacketParticles("magicCrit", e.x + 0.5F, e.y + 1.5F, e.z + 0.5F, 0.2F, 1F, 0.2F, 0.1F, 100));
+							player.playerNetServerHandler.sendPacket(new S29PacketSoundEffect("thaumcraft:golemironshoot", e.x, e.y, e.z, 1, 0.7F));
+							player.playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(item1));
+							player.playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(item2));
+							player.playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(item3));
+							player.playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(item4));
+							MinecraftingRecipes.getNetwork().sendTo(new PacketLightningBolt(e.world.provider.getDimensionName(),
+											e.x + 0.5, e.y + 2.1, e.z + 0.5,
+											e.entityPlayer.posX, e.entityPlayer.posY + 1, e.entityPlayer.posZ,
+											8, 1, 3, 5, 0.1F),
+									player);
+						}
 					}
 				}
 			}
@@ -247,13 +266,6 @@ public class EventListener {
 
 	}
 
-	private void shootBolt(World world, Vec3 from, Vec3 to) {
-		FXLightningBolt bolt = new FXLightningBolt(world, from.xCoord, from.yCoord, from.zCoord, to.xCoord, to.yCoord, to.zCoord, world.rand.nextLong(), 8, 1F, 3);
-		bolt.defaultFractal();
-		bolt.setType(5);
-		bolt.setWidth(0.1F);
-		bolt.finalizeBolt();
-	}
 
 	@SubscribeEvent
 	public void onDropsEvent(LivingDropsEvent e) {
