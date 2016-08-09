@@ -16,7 +16,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
 import net.minecraft.network.play.server.S29PacketSoundEffect;
 import net.minecraft.network.play.server.S2APacketParticles;
-import net.minecraft.potion.PotionEffect;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
@@ -138,14 +137,11 @@ public class EventListener {
 							//Reset eyes
 							tilePortal.setEyes((byte) 0);
 							e.world.markBlockForUpdate(tilePortal.xCoord, tilePortal.yCoord, tilePortal.zCoord);
-							//Potion
-							e.entityPlayer.addPotionEffect(new PotionEffect(9, 100, 1, true));
-							e.entityPlayer.addPotionEffect(new PotionEffect(15, 60, 1, true));
 
 							//Move the player
 							Vec3 vec = e.entityPlayer.getLookVec();
-							final double speed = Math.random() * 0.2 + 0.2;
-							e.entityPlayer.setVelocity(vec.xCoord * speed, Math.abs(vec.yCoord * speed * 5), vec.zCoord * speed);
+							final double speed = -2.5 + Math.sqrt(e.entityPlayer.getDistance(e.x + 0.5, e.y + 0.5, e.z + 0.5));
+							e.entityPlayer.setVelocity(vec.xCoord * speed, -0.3 * speed, vec.zCoord * speed);
 							((EntityPlayerMP) e.entityPlayer).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(e.entityPlayer));
 
 							//Send sound
@@ -214,8 +210,8 @@ public class EventListener {
 
 						//Move the player
 						Vec3 vec = e.entityPlayer.getLookVec();
-						final double speed = -Math.random() - 1;
-						e.entityPlayer.setVelocity(vec.xCoord * speed, vec.yCoord * speed, vec.zCoord * speed);
+						final double speed = -3 + Math.sqrt(e.entityPlayer.getDistance(e.x + 0.5, e.y + 0.5, e.z + 0.5));
+						e.entityPlayer.setVelocity(vec.xCoord * speed, -0.4 * speed, vec.zCoord * speed);
 						((EntityPlayerMP) e.entityPlayer).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(e.entityPlayer));
 
 						//Drop the eyes

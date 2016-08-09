@@ -41,7 +41,7 @@ public class PortalSacrificeData {
 			Map.Entry<EntityPlayerMP, PortalSacrificeData> entry = iterator.next();
 			PortalSacrificeData value = entry.getValue();
 			int passed = (int) (System.currentTimeMillis() - value.sacrificedAt);
-			final int time = 30000;
+			final int time = 20000;
 			if (passed <= time) {
 				entry.getKey().playerNetServerHandler.sendPacket(new S2APacketParticles("portal",
 						value.portalX + 0.5F, value.portalY + 1F, value.portalZ + 0.5F, 0.2F, 0.5F, 0.2F, 0.1F, 10 - passed / (time / 10)));
