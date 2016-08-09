@@ -1,7 +1,7 @@
 [
 {
   "modid": "minecraftingrecipes",
-  "name": "Minerafting Recipes",
+  "name": "Minecrafting Recipes",
   "description": "This mod adds recipes for items, that are not craftable or obtainable otherwise",
   "version": "${version}",
   "mcversion": "${mcversion}",

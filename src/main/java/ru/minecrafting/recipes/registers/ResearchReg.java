@@ -21,7 +21,7 @@ public class ResearchReg {
 		ThaumcraftApi.addWarpToResearch("ELDRITCH_KNOWLEDGE", 5);
 
 		new ResearchItem("PEARL_CREATION", "ELDRITCH",
-				new AspectList().add(Aspect.MAGIC, 10).add(Aspect.ORDER,10).add(Aspect.CRAFT, 10).add(Aspect.MAN, 10).add(Aspect.ELDRITCH, 10).add(Aspect.MIND, 10),
+				new AspectList().add(Aspect.MAGIC, 10).add(Aspect.ORDER, 10).add(Aspect.CRAFT, 10).add(Aspect.MAN, 10).add(Aspect.ELDRITCH, 10).add(Aspect.MIND, 10),
 				4, 5, 3, new ItemStack(ItemReg.MRThaumcraft, 1, 2))
 				.setItemTriggers(new ItemStack(ItemReg.MRThaumcraft, 1, 2))
 				.setParents("ELDRITCH_KNOWLEDGE")

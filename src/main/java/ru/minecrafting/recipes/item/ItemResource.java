@@ -18,7 +18,7 @@ import java.util.List;
 
 public class ItemResource extends Item {
 
-	IIcon[] icons = new IIcon[5];
+	final IIcon[] icons = new IIcon[5];
 
 	public ItemResource() {
 		super();
@@ -60,6 +60,7 @@ public class ItemResource extends Item {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void getSubItems(Item item, CreativeTabs tabs, List list) {

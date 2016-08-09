@@ -7,7 +7,7 @@ import thaumcraft.common.config.ConfigItems;
 import thaumcraft.common.items.ItemResearchNotes;
 import thaumcraft.common.lib.research.ResearchManager;
 
-public class ItemEldritchResearchNotes extends ItemResearchNotes{
+public class ItemEldritchResearchNotes extends ItemResearchNotes {
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {

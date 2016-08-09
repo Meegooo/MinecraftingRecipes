@@ -9,7 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class ServerSyncScheduler {
-	private static List<ScheduledTask> tasks = new ArrayList<>();
+	private static final List<ScheduledTask> tasks = new ArrayList<>();
 
 	public static void addTask(ScheduledTask task) {
 		tasks.add(task);
@@ -17,13 +17,12 @@ public class ServerSyncScheduler {
 
 	@SubscribeEvent
 	public void onServerTick(TickEvent.ServerTickEvent e) {
-		if (e.side==Side.SERVER) {
+		if (e.side == Side.SERVER)
 			for (Iterator<ScheduledTask> $i = tasks.iterator(); $i.hasNext(); ) {
 				ScheduledTask task = $i.next();
 				if (task.getRemainingDelayInTicks() <= 0) $i.remove();
 				task.tick();
 			}
-		}
 	}
 
 	public static class ScheduledTask {
@@ -51,7 +50,7 @@ public class ServerSyncScheduler {
 		}
 
 		public void tick() {
-			if (leftTicks--<=0)
+			if (leftTicks-- <= 0)
 				runnable.run();
 		}
 	}

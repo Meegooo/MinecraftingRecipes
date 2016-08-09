@@ -36,7 +36,7 @@ public class StaticEntityItem extends EntityItem {
 	@Override
 	public void onUpdate() {
 		super.onUpdate();
-	    motionX = 0;
+		motionX = 0;
 		motionY = 0;
 		motionZ = 0;
 

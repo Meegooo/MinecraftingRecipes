@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 public class PortalSacrificeData {
-	private static Map<EntityPlayerMP, PortalSacrificeData> sacrificeMap = new HashMap<>();
+	private static final Map<EntityPlayerMP, PortalSacrificeData> sacrificeMap = new HashMap<>();
 	private final int portalX;
 	private final int portalY;
 	private final int portalZ;

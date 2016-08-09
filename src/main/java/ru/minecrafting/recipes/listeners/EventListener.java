@@ -44,7 +44,7 @@ import java.util.Random;
 
 public class EventListener {
 
-	Random random = new Random();
+	final Random random = new Random();
 
 	@SubscribeEvent
 	public void onItemCrafted(PlayerEvent.ItemCraftedEvent e) {
@@ -104,6 +104,7 @@ public class EventListener {
 		3. If player knows how to open the portal correctly, but didn't do the sacrifice, we do fail routine
 		4. If player knows how to open the portal correctly and did sacrifice, we do success routine.
 	 */
+	@SuppressWarnings("unchecked")
 	@SubscribeEvent
 	public void onInteract(final PlayerInteractEvent e) {
 		if (!e.world.isRemote && e.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {

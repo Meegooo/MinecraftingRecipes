@@ -9,6 +9,7 @@ public class ItemReg {
 
 	public static ItemResource MRThaumcraft;
 	public static Item eldritchResearchNotes;
+
 	public static void registerItems() {
 		MRThaumcraft = new ItemResource();
 		GameRegistry.registerItem(MRThaumcraft, "ItemMRThaumcraft");
