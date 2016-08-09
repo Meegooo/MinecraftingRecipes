@@ -73,7 +73,8 @@ public class EventListener {
 						e.entity instanceof ITaintedMob ||
 						e.entity instanceof EntityTravelingTrunk ||
 						e.entity instanceof EntityEnderman ||
-						e.entity instanceof EntityWitch) {
+						e.entity instanceof EntityWitch ||
+						e.entity instanceof EntityEldritchGuardian) {
 					int minX = (int) Math.floor(e.entity.posX - 4);
 					int maxX = (int) Math.ceil(e.entity.posX + 4);
 					int minY = (int) Math.floor(e.entity.posY - 4);
