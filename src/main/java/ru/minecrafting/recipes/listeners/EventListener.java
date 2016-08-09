@@ -26,6 +26,7 @@ import ru.minecrafting.recipes.entity.StaticEntityItem;
 import ru.minecrafting.recipes.network.PacketLightningBolt;
 import ru.minecrafting.recipes.registers.ItemReg;
 import ru.minecrafting.recipes.util.ServerSyncScheduler;
+import ru.minecrafting.recipes.util.WorldUtil;
 import thaumcraft.api.aspects.Aspect;
 import thaumcraft.api.aspects.AspectList;
 import thaumcraft.api.entities.ITaintedMob;
@@ -85,7 +86,7 @@ public class EventListener {
 								TileEntity tileEntity = e.entity.worldObj.getTileEntity(x, y, z);
 								if (tileEntity instanceof TileEldritchAltar &&
 										ResearchManager.isResearchComplete(((EntityPlayerMP) killer).getDisplayName(), "ELDRITCH_KNOWLEDGE")) {
-									PortalSacrificeData.add((EntityPlayerMP) killer, x, y, z);
+									PortalSacrificeData.add(e.entity.worldObj, x, y, z);
 									break;
 								}
 							}
@@ -115,7 +116,12 @@ public class EventListener {
 				//1.1. Player has to know how to open the portal, altar has to have 4 eyes.
 				if (tilePortal.getEyes() == 4 &&
 						ResearchManager.isResearchComplete(e.entityPlayer.getDisplayName(), "OCULUS")) {
-					PortalSacrificeData sacrificeData = PortalSacrificeData.get((EntityPlayerMP) e.entityPlayer);
+					List<PortalSacrificeData> sacrificeDatas = PortalSacrificeData.getCopy();
+					PortalSacrificeData sacrificeData = null;
+					for (PortalSacrificeData sacrificeData1 : sacrificeDatas) {
+						if (sacrificeData1.getPortalX() == e.x && sacrificeData1.getPortalY() == e.y && sacrificeData1.getPortalZ() == e.z)
+							sacrificeData = sacrificeData1;
+					}
 					//4. Player knows how to open the portal correctly and did the sacrifice
 					if (ResearchManager.isResearchComplete(e.entityPlayer.getDisplayName(), "ELDRITCH_KNOWLEDGE") &&
 							sacrificeData != null &&
@@ -137,17 +143,20 @@ public class EventListener {
 							tilePortal.setEyes((byte) 0);
 							e.world.markBlockForUpdate(tilePortal.xCoord, tilePortal.yCoord, tilePortal.zCoord);
 
-							//Move the player
-							Vec3 vec = e.entityPlayer.getLookVec();
-							final double speed = -2.5 + Math.sqrt(e.entityPlayer.getDistance(e.x + 0.5, e.y + 0.5, e.z + 0.5));
-							((EntityPlayerMP) e.entityPlayer).motionX = vec.xCoord * speed;
-							((EntityPlayerMP) e.entityPlayer).motionY = -0.3 * speed;
-							((EntityPlayerMP) e.entityPlayer).motionZ = vec.zCoord * speed;
-							((EntityPlayerMP) e.entityPlayer).playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(e.entityPlayer));
+							//Move the players
+							for (EntityPlayerMP player : WorldUtil.getNearbyPlayers(e.world, e.x, e.y, e.z, 6)) {
+								Vec3 vec = player.getLookVec();
+								double speed = -2.5 + Math.sqrt(player.getDistance(e.x + 0.5, e.y + 0.5, e.z + 0.5));
+								if (speed > -0.001)
+									speed = 0;
+								player.motionX = vec.xCoord * speed;
+								player.motionY = -0.3 * speed;
+								player.motionZ = vec.zCoord * speed;
+								player.playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(player));
+							}
 
 							//Send sound
-							List<EntityPlayerMP> players = e.world.getEntitiesWithinAABB(EntityPlayerMP.class, AxisAlignedBB.getBoundingBox(e.x - 64, e.y - 64, e.z - 64, e.x + 64, e.y + 64, e.z + 64));
-							for (EntityPlayerMP player : players) {
+							for (EntityPlayerMP player : WorldUtil.getNearbyPlayers(e.world, e.x, e.y, e.z, 64)) {
 								player.playerNetServerHandler.sendPacket(new S29PacketSoundEffect("thaumcraft:rumble", e.x, e.y, e.z, 1, 0.7F));
 							}
 
@@ -170,7 +179,7 @@ public class EventListener {
 							}
 
 							//Stop particles
-							PortalSacrificeData.remove((EntityPlayerMP) e.entityPlayer);
+							PortalSacrificeData.remove(sacrificeData);
 						}
 						return;
 					}
@@ -237,8 +246,7 @@ public class EventListener {
 						item4.velocityChanged = true;
 
 						//throw particles and move items for nearby players.
-						List<EntityPlayerMP> players = e.world.getEntitiesWithinAABB(EntityPlayerMP.class, AxisAlignedBB.getBoundingBox(e.x - 64, e.y - 64, e.z - 64, e.x + 64, e.y + 64, e.z + 64));
-						for (EntityPlayerMP player : players) {
+						for (EntityPlayerMP player : WorldUtil.getNearbyPlayers(e.world, e.x, e.y, e.z, 64)) {
 							player.playerNetServerHandler.sendPacket(new S2APacketParticles("magicCrit", e.x + 0.5F, e.y + 1.5F, e.z + 0.5F, 0.2F, 1F, 0.2F, 0.1F, 100));
 							player.playerNetServerHandler.sendPacket(new S29PacketSoundEffect("thaumcraft:golemironshoot", e.x, e.y, e.z, 1, 0.7F));
 							player.playerNetServerHandler.sendPacket(new S12PacketEntityVelocity(item1));

@@ -2,49 +2,55 @@ package ru.minecrafting.recipes.data;
 
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.play.server.S2APacketParticles;
+import net.minecraft.world.World;
+import ru.minecrafting.recipes.util.WorldUtil;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.List;
 
 public class PortalSacrificeData {
-	private static final Map<EntityPlayerMP, PortalSacrificeData> sacrificeMap = new HashMap<>();
+	private static final List<PortalSacrificeData> sacrificeMap = new ArrayList<>();
+	private final World world;
 	private final int portalX;
 	private final int portalY;
 	private final int portalZ;
 	private final long sacrificedAt;
 
-	private PortalSacrificeData(int portalX, int portalY, int portalZ) {
+	private PortalSacrificeData(World world, int portalX, int portalY, int portalZ) {
+		this.world = world;
 		this.portalX = portalX;
 		this.portalY = portalY;
 		this.portalZ = portalZ;
 		sacrificedAt = System.currentTimeMillis();
 	}
 
-	public static PortalSacrificeData add(EntityPlayerMP player, int x, int y, int z) {
-		PortalSacrificeData data = new PortalSacrificeData(x, y, z);
-		sacrificeMap.put(player, data);
+	public static PortalSacrificeData add(World world, int x, int y, int z) {
+		PortalSacrificeData data = new PortalSacrificeData(world, x, y, z);
+		sacrificeMap.add(data);
 		return data;
 	}
 
-	public static PortalSacrificeData get(EntityPlayerMP player) {
-		return sacrificeMap.get(player);
+	public static List<PortalSacrificeData> getCopy() {
+		return new ArrayList<>(sacrificeMap);
 	}
 
-	public static PortalSacrificeData remove(EntityPlayerMP player) {
-		return sacrificeMap.remove(player);
+	public static boolean remove(PortalSacrificeData data) {
+		return sacrificeMap.remove(data);
 	}
 
 	public static void onServerTick() {
-		for (Iterator<Map.Entry<EntityPlayerMP, PortalSacrificeData>> iterator = PortalSacrificeData.sacrificeMap.entrySet().iterator();
+		for (Iterator<PortalSacrificeData> iterator = PortalSacrificeData.sacrificeMap.iterator();
 		     iterator.hasNext(); ) {
-			Map.Entry<EntityPlayerMP, PortalSacrificeData> entry = iterator.next();
-			PortalSacrificeData value = entry.getValue();
+			PortalSacrificeData value = iterator.next();
 			int passed = (int) (System.currentTimeMillis() - value.sacrificedAt);
 			final int time = 20000;
 			if (passed <= time) {
-				entry.getKey().playerNetServerHandler.sendPacket(new S2APacketParticles("portal",
-						value.portalX + 0.5F, value.portalY + 1F, value.portalZ + 0.5F, 0.2F, 0.5F, 0.2F, 0.1F, 10 - passed / (time / 10)));
+				List<EntityPlayerMP> nearbyPlayers = WorldUtil.getNearbyPlayers(value.world, value.portalX, value.portalY, value.portalZ, 64);
+				for (EntityPlayerMP nearbyPlayer : nearbyPlayers) {
+					nearbyPlayer.playerNetServerHandler.sendPacket(new S2APacketParticles("portal",
+							value.portalX + 0.5F, value.portalY + 1F, value.portalZ + 0.5F, 0.2F, 0.5F, 0.2F, 0.1F, 10 - passed / (time / 10)));
+				}
 			} else
 				iterator.remove();
 		}
