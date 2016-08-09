@@ -265,7 +265,7 @@ public class EventListener {
 					//If we should drop crimson rites
 					if (!ResearchManager.isResearchComplete(((EntityPlayerMP) killer).getDisplayName(), "CRIMSON") &&
 							ResearchManager.isResearchComplete(((EntityPlayerMP) killer).getDisplayName(), "ELDRITCHMAJOR")) {
-						double i = random.nextDouble() * 100;
+						double i = random.nextDouble() * 20;
 						if (i < 1 + e.lootingLevel) {
 							e.drops.add(new EntityItem(e.entityLiving.worldObj, e.entityLiving.posX, e.entityLiving.posY, e.entityLiving.posZ,
 									new ItemStack(ConfigItems.itemEldritchObject, 1, 1)));
@@ -274,7 +274,7 @@ public class EventListener {
 					//If we should drop knowledge fragments
 					if (killer.getEntityData().hasKey("activatedObelisk") && killer.getEntityData().getBoolean("activatedObelisk") &&
 							!ResearchManager.isResearchComplete(((EntityPlayerMP) killer).getDisplayName(), "ELDRITCH_KNOWLEDGE")) {
-						double i = random.nextDouble() * 1000 - e.lootingLevel * 200.0;
+						double i = random.nextDouble() * 600 - e.lootingLevel * 200.0;
 						if (i < 200) {
 							e.drops.add(new EntityItem(e.entityLiving.worldObj, e.entityLiving.posX, e.entityLiving.posY, e.entityLiving.posZ,
 									new ItemStack(ItemReg.MRThaumcraft, 1, 1)));
