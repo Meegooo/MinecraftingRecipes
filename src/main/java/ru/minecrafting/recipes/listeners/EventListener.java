@@ -1,16 +1,15 @@
 package ru.minecrafting.recipes.listeners;
 
-import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityGolem;
 import net.minecraft.entity.monster.EntityWitch;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
@@ -203,7 +202,7 @@ public class EventListener {
 							player.playerNetServerHandler.sendPacket(new S29PacketSoundEffect("thaumcraft:golemironshoot", e.x, e.y, e.z, 1, 0.7F));
 						}
 						Vec3 vecPortal = Vec3.createVectorHelper(e.x + 0.5, e.y + 2.1, e.z + 0.5);
-						shootBolt(e.world, vecPortal, getVecFromLiving(e.entityPlayer));
+						shootBolt(e.world, vecPortal, getVecFromPlayer(e.entityPlayer));
 
 						//Damage the player
 						e.entityPlayer.attackEntityFrom(new DamageSource("Eldritch Obelisk"), ((float) (Math.random() * 5)));
@@ -240,25 +239,10 @@ public class EventListener {
 
 	}
 
-	private Vec3 getVecFromLiving(EntityLivingBase living) {
+	private Vec3 getVecFromPlayer(EntityPlayer living) {
 		double px = living.posX;
-		double py = living.posY;
+		double py = living.posY + 1;
 		double pz = living.posZ;
-		if (living.getEntityId() != FMLClientHandler.instance().getClient().thePlayer.getEntityId()) {
-			py = living.boundingBox.minY + (double) (living.height / 2.0F) + 0.25D;
-		}
-
-		px += (double) (-MathHelper.cos(living.rotationYaw / 180.0F * 3.141593F) * 0.06F);
-		py += -0.05999999865889549D;
-		pz += (double) (-MathHelper.sin(living.rotationYaw / 180.0F * 3.141593F) * 0.06F);
-		if (living.getEntityId() != FMLClientHandler.instance().getClient().thePlayer.getEntityId()) {
-			py = living.boundingBox.minY + (double) (living.height / 2.0F) + 0.25D;
-		}
-
-		Vec3 vec3d = living.getLook(1.0F);
-		px += vec3d.xCoord * 0.3D;
-		py += vec3d.yCoord * 0.3D;
-		pz += vec3d.zCoord * 0.3D;
 		return Vec3.createVectorHelper(px, py, pz);
 
 	}
