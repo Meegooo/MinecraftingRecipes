@@ -9,7 +9,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityGolem;
 import net.minecraft.entity.monster.EntityWitch;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.server.S12PacketEntityVelocity;
@@ -264,14 +263,6 @@ public class EventListener {
 				}
 			}
 		}
-
-	}
-
-	private Vec3 getVecFromPlayer(EntityPlayer living) {
-		double px = living.posX;
-		double py = living.posY + 1;
-		double pz = living.posZ;
-		return Vec3.createVectorHelper(px, py, pz);
 
 	}
 
