@@ -1,9 +1,15 @@
 package ru.minecrafting.recipes.registers;
 
+import buildcraft.BuildCraftTransport;
 import cpw.mods.fml.common.registry.GameRegistry;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
+import net.minecraftforge.oredict.OreDictionary;
+import net.minecraftforge.oredict.ShapedOreRecipe;
+import ru.minecrafting.recipes.util.LogHelper;
 import tconstruct.world.TinkerWorld;
 import thaumcraft.api.ThaumcraftApi;
 import thaumcraft.api.aspects.Aspect;
@@ -29,6 +35,7 @@ public class RecipeReg {
 	public static InfusionRecipe praetor_chest;
 	public static InfusionRecipe praetor_leggings;
 	public static InfusionRecipe crimson_sword;
+
 	public static void registerRecipes() {
 		registerVanillaRecipes();
 		registerInfusionRecipes();
@@ -44,48 +51,49 @@ public class RecipeReg {
 		knight_chest = GameRegistry.addShapedRecipe(new ItemStack(ConfigItems.itemChestCultistPlate), "rrr", "r r", "r r", 'r', new ItemStack(ItemReg.MRThaumcraft, 1, 4));
 		knight_leggings = GameRegistry.addShapedRecipe(new ItemStack(ConfigItems.itemLegsCultistPlate), "rrr", "r r", 'r', new ItemStack(ItemReg.MRThaumcraft, 1, 4));
 		crimson_boots = GameRegistry.addShapedRecipe(new ItemStack(ConfigItems.itemBootsCultist), "r r", "r r", 'r', new ItemStack(ItemReg.MRThaumcraft, 1, 3));
+
 	}
 
 
 	private static void registerInfusionRecipes() {
 		pearl_infusion = ThaumcraftApi.addInfusionCraftingRecipe("PEARL_CREATION", new ItemStack(ConfigItems.itemEldritchObject, 1, 3),
-				4, new AspectList().add(Aspect.ORDER, 16).add(Aspect.ELDRITCH, 32).add(Aspect.GREED, 24).add(Aspect.MAGIC, 64),
+				4, new AspectList().add(Aspect.ORDER, 8).add(Aspect.ELDRITCH, 16).add(Aspect.ENERGY, 32).add(Aspect.MAGIC, 64).add(Aspect.ENTROPY, 8),
 				new ItemStack(ItemReg.MRThaumcraft, 1, 2),
 				new ItemStack[]{
 						new ItemStack(Items.nether_star, 1),
+						new ItemStack(ConfigItems.itemResource, 1, 14),
 						new ItemStack(Items.ender_pearl, 1),
+						new ItemStack(ConfigItems.itemResource, 1, 14),
+						new ItemStack(ConfigItems.itemResource, 1, 1),
+						new ItemStack(ConfigItems.itemResource, 1, 14),
 						new ItemStack(Items.ender_pearl, 1),
-						new ItemStack(ConfigItems.itemResource, 1, 14),
-						new ItemStack(ConfigItems.itemResource, 1, 14),
-						new ItemStack(ConfigItems.itemResource, 1, 14),
-						new ItemStack(ConfigItems.itemResource, 1, 14),
-						new ItemStack(ConfigItems.itemResource, 1, 1)
+						new ItemStack(ConfigItems.itemResource, 1, 14)
 				});
 		praetor_helmet = ThaumcraftApi.addInfusionCraftingRecipe("CRIMSON_PRAETOR_ARMOR", new ItemStack(ConfigItems.itemHelmetCultistLeaderPlate),
 				2, new AspectList().add(Aspect.CLOTH, 8).add(Aspect.ELDRITCH, 16).add(Aspect.ARMOR, 16).add(Aspect.METAL, 8),
 				new ItemStack(ConfigItems.itemHelmetCultistPlate),
-				new ItemStack[] {
+				new ItemStack[]{
 						new ItemStack(ItemReg.MRThaumcraft, 1, 4),
-						new ItemStack(ItemReg.MRThaumcraft, 1, 3),
 						new ItemStack(ConfigItems.itemResource, 1, 17),
+						new ItemStack(ItemReg.MRThaumcraft, 1, 3),
 						new ItemStack(ConfigItems.itemResource, 1, 17)
 				});
 		praetor_chest = ThaumcraftApi.addInfusionCraftingRecipe("CRIMSON_PRAETOR_ARMOR", new ItemStack(ConfigItems.itemChestCultistLeaderPlate),
 				2, new AspectList().add(Aspect.CLOTH, 8).add(Aspect.ELDRITCH, 16).add(Aspect.ARMOR, 16).add(Aspect.METAL, 8),
 				new ItemStack(ConfigItems.itemChestCultistPlate),
-				new ItemStack[] {
+				new ItemStack[]{
 						new ItemStack(ItemReg.MRThaumcraft, 1, 4),
-						new ItemStack(ItemReg.MRThaumcraft, 1, 3),
 						new ItemStack(ConfigItems.itemResource, 1, 17),
+						new ItemStack(ItemReg.MRThaumcraft, 1, 3),
 						new ItemStack(ConfigItems.itemResource, 1, 17)
 				});
 		praetor_leggings = ThaumcraftApi.addInfusionCraftingRecipe("CRIMSON_PRAETOR_ARMOR", new ItemStack(ConfigItems.itemLegsCultistLeaderPlate),
 				2, new AspectList().add(Aspect.CLOTH, 8).add(Aspect.ELDRITCH, 16).add(Aspect.ARMOR, 16).add(Aspect.METAL, 8),
 				new ItemStack(ConfigItems.itemLegsCultistPlate),
-				new ItemStack[] {
+				new ItemStack[]{
 						new ItemStack(ItemReg.MRThaumcraft, 1, 4),
-						new ItemStack(ItemReg.MRThaumcraft, 1, 3),
 						new ItemStack(ConfigItems.itemResource, 1, 17),
+						new ItemStack(ItemReg.MRThaumcraft, 1, 3),
 						new ItemStack(ConfigItems.itemResource, 1, 17)
 				});
 
@@ -93,19 +101,19 @@ public class RecipeReg {
 				5, new AspectList().add(Aspect.WEAPON, 32).add(Aspect.ELDRITCH, 16).add(Aspect.TRAP, 8).add(Aspect.DARKNESS, 8).add(Aspect.POISON, 8),
 				new ItemStack(ConfigItems.itemSwordVoid),
 				new ItemStack[]{
-						new ItemStack(ItemReg.MRThaumcraft, 1, 4),
-						new ItemStack(ItemReg.MRThaumcraft, 1, 4),
-						new ItemStack(ItemReg.MRThaumcraft, 1, 0),
-						new ItemStack(ItemReg.MRThaumcraft, 1, 0),
 						new ItemStack(Items.quartz, 1),
-						new ItemStack(Items.quartz, 1)
+						new ItemStack(ItemReg.MRThaumcraft, 1, 0),
+						new ItemStack(ItemReg.MRThaumcraft, 1, 4),
+						new ItemStack(Items.quartz, 1),
+						new ItemStack(ItemReg.MRThaumcraft, 1, 4),
+						new ItemStack(ItemReg.MRThaumcraft, 1, 0)
 				});
 
 	}
 
 	private static void registerArcaneRecipes() {
 		infused_blood = ThaumcraftApi.addArcaneCraftingRecipe("INFUSED_BLOOD", new ItemStack(ItemReg.MRThaumcraft, 1, 0),
-				new AspectList().add(Aspect.ORDER, 16).add(Aspect.ENTROPY, 16).add(Aspect.EARTH, 16).add(Aspect.WATER, 16).add(Aspect.FIRE, 16).add(Aspect.AIR, 16),
+				new AspectList().add(Aspect.ORDER, 6).add(Aspect.ENTROPY, 6).add(Aspect.EARTH, 6).add(Aspect.WATER, 6).add(Aspect.FIRE, 6).add(Aspect.AIR, 6),
 				"sbs", " p ", 'p', new ItemStack(ConfigItems.itemEldritchObject, 1, 3), 'b', new ItemStack(TinkerWorld.strangeFood, 1, 1), 's', new ItemStack(ConfigItems.itemResource, 1, 14));
 
 		blood_cloth = ThaumcraftApi.addShapelessArcaneCraftingRecipe("CRIMSON_CLERIC_ARMOR", new ItemStack(ItemReg.MRThaumcraft, 1, 3),
@@ -113,7 +121,7 @@ public class RecipeReg {
 				new ItemStack(ConfigItems.itemResource, 1, 7), new ItemStack(ItemReg.MRThaumcraft, 1, 0));
 
 		blood_ingot = ThaumcraftApi.addShapelessArcaneCraftingRecipe("CRIMSON_KNIGHT_ARMOR", new ItemStack(ItemReg.MRThaumcraft, 1, 4),
-				new AspectList().add(Aspect.ORDER, 16).add(Aspect.ENTROPY, 16).add(Aspect.EARTH, 8).add(Aspect.WATER, 4),
+				new AspectList().add(Aspect.ORDER, 4).add(Aspect.ENTROPY, 4).add(Aspect.EARTH, 8).add(Aspect.WATER, 4),
 				new ItemStack(ConfigItems.itemResource, 1, 2), new ItemStack(ItemReg.MRThaumcraft, 1, 0));
 	}
 }
